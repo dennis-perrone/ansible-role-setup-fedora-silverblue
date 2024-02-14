@@ -1,0 +1,40 @@
+---
+# tasks file for ansible-role-setup-fedora-silverblue
+
+- name: Check to see if an rpm-ostree transaction is currently running
+  register: ostree_status
+  failed_when: ostree_status.rc == "999"  # Don't fail, regardless of return code
+  ansible.builtin.command: pgrep rpm-ostree
+
+- name: Cancel a current rpm-ostree update when an update is currently running.
+  when: ostree_status.rc != 1  
+  ansible.builtin.command: rpm-ostree cancel
+
+- name: Install desired applications as layered packages
+  become: true
+  become_method: sudo
+  loop: "{{ layered_package_install }}"
+  community.general.rpm_ostree_pkg:
+    name: "{{ item }}"
+    state: present
+    # apply_live: true  # This feature is not yet available
+
+- name: Remove applications from the base OS
+  become: true
+  become_method: sudo
+  loop: "{{ base_pkg_uninstall }}"
+  ansible.builtin.command: rpm-ostree override remove {{ item }}
+
+- debug:
+    msg: "A reboot is required to complete installation / removal of these packages"
+
+- name: Query whether booted RPM-OSTree deployment is first deployment
+  register: booted
+  shell: rpm-ostree status --json | jq -r .deployments[0].booted
+
+- name: Reboot if new deployement is ready.
+  become: true
+  when:
+    - booted.stdout == "false"
+  reboot:
+    reboot_timeout: 300

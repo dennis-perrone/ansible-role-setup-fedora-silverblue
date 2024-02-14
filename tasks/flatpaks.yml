@@ -1,0 +1,27 @@
+---
+# tasks file for ansible-role-setup-fedora-silverblue
+
+- name: Add Flatpak remote for Flathub
+  loop: "{{ flatpak_remotes }}"
+  community.general.flatpak_remote:
+    name: "{{ item.name }}"
+    state: present
+    method: user
+    flatpakrepo_url: "{{ item.url }}"
+
+- name: Update Flatpak metadata
+  ansible.builtin.command: flatpak update --appstream
+
+- name: Remove unwanted Flatpak packages
+  loop: "{{ flatpak_pkgs_uninstall }}"
+  community.general.flatpaks:
+    name: "{{ item }}"
+    state: absent
+
+- name: Install Flatpak packagessu
+  loop: "{{ flatpak_pkgs_install }}"
+  community.general.flatpaks:
+    name: "{{ item.package }}"
+    state: present
+    method: user
+    remote: "{{ item.remote }}"

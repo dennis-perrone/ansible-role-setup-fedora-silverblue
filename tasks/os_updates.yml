@@ -1,0 +1,12 @@
+---
+# tasks file for ansible-role-setup-fedora-silverblue
+
+- name: Configure update settings
+  become: true
+  become_method: sudo
+  ansible.builtin.template:
+    src: templates/rpm-ostreed.conf.jinja2
+    dest: /etc/rpm-ostreed.conf
+    owner: root
+    group: root
+    mode: 0644

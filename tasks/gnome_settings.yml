@@ -1,0 +1,35 @@
+---
+# tasks file for ansible-role-setup-fedora-silverblue
+
+- name: Checking for the presence of the 'python3-psutil' package
+  register: psutil
+  ansible.builtin.stat:
+    path: /usr/share/doc/python3-psutil
+
+- debug:
+    msg: "The python3-psutil package will now be installed, but this role won't work until the package is fully installed after a reboot."
+  when: psutil.stat.exists != true
+
+- name: If needed, install the 'python3-psutil' layered package
+  become: true
+  become_method: sudo
+  when: psutil.stat.exists != true
+  community.general.rpm_ostree_pkg:
+    name: python3-psutil
+    state: present
+    # apply_live: true
+
+- name: Apply desired gnome_settings via dconf. This step will be skipped if 'python3-psutil' is not fully present.
+  loop: "{{ dconf_settings }}"
+  when: psutil.stat.exists == true  
+  community.general.dconf:
+    key: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+
+
+- name: Update the dconf database. This step will be skipped if 'python3-psutil' is not fully present.
+  become: true
+  become_method: sudo
+  when: psutil.stat.exists == true
+  ansible.builtin.command: sudo dconf update

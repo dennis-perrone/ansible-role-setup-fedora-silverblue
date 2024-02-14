@@ -1,0 +1,26 @@
+---
+# tasks file for ansible-role-setup-fedora-silverblue
+
+- name: Load variables
+  ansible.builtin.include_vars:
+    dir: vars
+
+- name: Execute tasks to update the Silverblue
+  ansible.builtin.import_tasks:
+    file: os_updates.yml
+
+- name: Execute tasks to configure layered packages
+  ansible.builtin.import_tasks:
+    file: layered_packages.yml
+
+- name: Execute tasks to configure Gnome
+  ansible.builtin.import_tasks:
+    file: flatpaks.yml
+
+# - name: Execute tasks to configure Gnome
+#   ansible.builtin.import_tasks:
+#     file: gnome_settings.yml
+
+# - name: Execute tasks to install fonts
+#   ansible.builtin.import_tasks:
+#     file: fonts.yml

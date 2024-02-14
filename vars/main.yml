@@ -1,0 +1,50 @@
+---
+# vars file for ansible-role-setup-fedora-silverblue
+
+layered_pkg_install:
+  - distrobox
+  - printer-driver-brlaser
+  - virt-manager
+
+base_pkg_uninstall:
+  - firefox
+  - firefox-lang-packs
+  - gnome-tour
+  - toolbox
+
+flatpak_remotes:
+  - { name: 'flathub', url: 'https://dl.flathub.org/repo/flathub.flatpakrepo' }
+
+flatpak_pkgs_install:
+  - { remote: 'flathub', package: 'com.brave.Browser' }
+  - { remote: 'flathub', package: 'org.signal.Signal' }
+  - { remote: 'flathub', package: 'com.slack.Slack' }
+  - { remote: 'flathub', package: 'com.github.tchx84.Flatseal' }
+  - { remote: 'flathub', package: 'org.mozilla.firefox' }
+  - { remote: 'flathub', package: 'org.freedesktop.Platform.ffmpeg-full' }
+  - { remote: 'flathub', package: 'com.mattjakeman.ExtensionManager' }
+  #- { remote: 'flathub', package: 'com.spotify.Client' }
+
+flatpak_pkgs_uninstall:
+  - org.gnome.Calculator
+  - org.gnome.Cheese
+  - org.gnome.Extensions
+
+fonts_installed:
+  - SourceCodePro
+  - UbuntuMono
+
+dconf_settings:
+- { key: '/org/gnome/settings-daemon/plugins/color/night-light-enabled', value: 'true' }
+- { key: '/org/gnome/desktop/privacy/remember-recent-files', value: 'true' }
+- { key: '/org/gnome/desktop/privacy/remove-old-trash-files', value: 'true' }
+- { key: '/org/gnome/desktop/privacy/remove-old-temp-files', value: 'true' }
+- { key: '/org/gnome/desktop/privacy/old-files-age', value: 'uint32 14' }
+- { key: '/org/gnome/desktop/session/idle-delay', value: 'uint32 480' }
+- { key: '/org/gnome/desktop/screensaver/lock-delay', value: 'uint32 1800' }
+- { key: '/org/gnome/desktop/interface/clock-format', value: "'12h'" }
+- { key: '/org/gtk/settings/file-chooser/clock-format', value: "'12h'" }
+- { key: '/org/gnome/desktop/wm/preferences/button-layout', value: "'appmenu:minimize,maximize,close'" }
+
+update_policy: stage
+idle_timeout: '600'
