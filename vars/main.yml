@@ -5,10 +5,13 @@ layered_pkg_install:
   - distrobox
   - printer-driver-brlaser
   - virt-manager
+  - python3-psutil
+
+base_pkg_override_uninstall:
+  - firefox
+  - firefox-langpacks
 
 base_pkg_uninstall:
-  - firefox
-  - firefox-lang-packs
   - gnome-tour
   - toolbox
 
